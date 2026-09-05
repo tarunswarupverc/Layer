@@ -1,4 +1,5 @@
-name: PickleScan Security Gate
+# Simple / minimum-requirement security gate.
+name: PickleScan Security Gate (Simple)
 
 on:
   pull_request:
