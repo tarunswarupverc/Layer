@@ -82,27 +82,30 @@ else
   echo "Opened Pull Request: $pr_url"
 fi
 
-echo "Polling GitHub API for PickleScan workflow execution..."
-run_id=""
+echo "Polling GitHub API for Simple and Optimized PickleScan runs..."
+simple_id=""
+optimized_id=""
 for _ in {1..20}; do
-  run_id="$(gh run list --branch "$BRANCH_NAME" --workflow "PickleScan Security Gate" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
-  if [[ -n "$run_id" ]]; then
+  simple_id="$(gh run list --branch "$BRANCH_NAME" --workflow "PickleScan Security Gate (Simple)" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+  optimized_id="$(gh run list --branch "$BRANCH_NAME" --workflow "PickleScan Security Gate (Optimized)" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+  if [[ -n "$simple_id" && -n "$optimized_id" ]]; then
     break
   fi
   sleep 3
 done
 
-if [[ -z "$run_id" ]]; then
-  echo "Warning: Workflow run timed out waiting to start. Track status at: $pr_url"
+if [[ -z "$simple_id" && -z "$optimized_id" ]]; then
+  echo "Warning: Workflow runs timed out waiting to start. Track status at: $pr_url"
   exit 0
 fi
 
-echo "Streaming logs for Run ID: $run_id..."
-gh run watch "$run_id" --exit-status || true
+for run_id in $simple_id $optimized_id; do
+  echo "Streaming logs for Run ID: $run_id..."
+  gh run watch "$run_id" --exit-status || true
+  echo "----- SECURITY GATE AUDIT LOGS ($run_id) -----"
+  gh run view "$run_id" --log-failed || true
+  echo "Run URL: $(gh run view "$run_id" --json url --jq .url)"
+done
 
-echo "----- SECURITY GATE AUDIT LOGS -----"
-gh run view "$run_id" --log-failed || true
-
-echo "Run URL: $(gh run view "$run_id" --json url --jq .url)"
 echo "PR URL: $pr_url"
 echo "=== Ingestion Pipeline Execution Complete ==="
