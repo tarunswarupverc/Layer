@@ -1,0 +1,29 @@
+name: PickleScan Security Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  scan-models:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install picklescan
+
+      - name: Run PickleScan on Models Directory
+        run: |
+          echo "Scanning models directory for malicious globals..."
+          # Scan the models directory; picklescan exits with non-zero if unsafe globals are found
+          picklescan --path models/
