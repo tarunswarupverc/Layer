@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# First extra-credit script: download the HF sample, open a PR, trigger the gate.
+# Intentionally naive (no download checks). See script_optimized.sh for the hardened version.
 set -e
 
 # Configuration Variables
