@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# HiddenLayer Case Study: Automated Model Ingestion & Security Test Pipeline
-# Orchestrates end-to-end model retrieval, Git workflow, and CI/CD security gate validation via CLI.
-
+# Hardened extra-credit script: download the HF sample, verify it is a pickle,
+# open a PR, and watch both PickleScan workflows.
 set -euo pipefail
 
 # --- Overridable Configuration Defaults ---
-MODEL_URL="${MODEL_URL:-https://huggingface.co/ScanMe/test-models/resolve/main/eval.pkl}"
+MODEL_URL="${MODEL_URL:-https://huggingface.co/ScanMe/Models/resolve/main/eval.pkl}"
 MODEL_PATH="${MODEL_PATH:-models/eval.pkl}"
 BRANCH_NAME="${BRANCH_NAME:-feature/add-hf-model}"
 BASE_BRANCH="${BASE_BRANCH:-main}"
